@@ -1,13 +1,17 @@
 import * as React from 'react'
-import {Link, Outlet, createRootRouteWithContext} from '@tanstack/react-router'
-import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
-import {TanStackRouterDevtools} from '@tanstack/router-devtools'
-import {QueryClient} from '@tanstack/react-query'
-import {AuthContext} from '@/hooks/useAuth'
+
+import {QueryClient, useMutation, useQuery} from '@tanstack/react-query'
+import {
+  createRootRouteWithContext,
+  Link,
+  Outlet,
+  useRouter,
+} from '@tanstack/react-router'
+import Layout from '@/components/layout'
+import {z} from 'zod'
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
-  auth: AuthContext
 }>()({
   component: RootComponent,
   notFoundComponent: () => {
@@ -21,16 +25,14 @@ export const Route = createRootRouteWithContext<{
   },
 })
 
+
+
+
 function RootComponent() {
+
   return (
-    <>
+    <Layout>
       <Outlet />
-      <ReactQueryDevtools
-        initialIsOpen={false}
-        buttonPosition="top-right"
-        position="right"
-      />
-      <TanStackRouterDevtools position="bottom-right" />
-    </>
+    </Layout>
   )
 }

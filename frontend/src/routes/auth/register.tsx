@@ -2,16 +2,17 @@ import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
 import {Label} from '@/components/ui/label'
 import FieldInfo from '@/components/utils/fieldInfo'
-import {api} from '@/lib/api'
 import {useForm} from '@tanstack/react-form'
-import {useMutation} from '@tanstack/react-query'
-import {createFileRoute, Link, redirect} from '@tanstack/react-router'
+import {createFileRoute, Link} from '@tanstack/react-router'
 import {zodValidator} from '@tanstack/zod-form-adapter'
 import {z} from 'zod'
 import {Alert, AlertDescription, AlertTitle} from '@/components/ui/alert' // Import the Alert component
 import {useState} from 'react' // Import useState
+import {api} from '@/lib/api'
+import {useMutation} from '@tanstack/react-query'
+import {LoaderCircle} from 'lucide-react'
 
-export const Route = createFileRoute('/register')({
+export const Route = createFileRoute('/auth/register')({
   component: RegisterComponent,
 })
 
@@ -23,6 +24,19 @@ const registerUserSchema = z.object({
 
 function RegisterComponent() {
   const [error, setError] = useState<string | null>(null) // State for error message
+
+  const $register = api.auth.register.$post // Call the register function
+
+  const {
+    data: user,
+    isPending: submitting,
+    mutate: register,
+  } = useMutation({
+    mutationFn: $register,
+    onSuccess: (data) => {
+      console.log('data', data)
+    },
+  })
 
   const form = useForm({
     defaultValues: {
@@ -36,40 +50,15 @@ function RegisterComponent() {
     },
     onSubmit: async ({value}) => {
       try {
-        await registerUserMutation.mutateAsync({
+        register({
           form: {
-            name: value.name,
-            email: value.email,
-            password: value.password,
+            ...value,
             role: 'user',
           },
-        })
+        }) // Call the register function
       } catch (err) {
         setError('Registration failed. Please try again.') // Set error message
       }
-    },
-  })
-
-  const $register = api.auth.register.$post
-
-  const navigate = Route.useNavigate()
-
-  const registerUserMutation = useMutation({
-    mutationFn: $register,
-    onSuccess: ({status}) => {
-      if (status === 201) {
-        setError(null)
-        navigate({
-          to: '/login',
-        })
-      } else if (status === 400) {
-        setError('User already exists. Please try again.') // Set error message on user already exists
-      } else {
-        setError('Registration failed. Please try again.') // Set error message on other errors
-      }
-    },
-    onError: () => {
-      setError('Registration failed. Please try again.') // Set error message on mutation error
     },
   })
 
@@ -149,11 +138,15 @@ function RegisterComponent() {
             </form.Field>
           </div>
           <div className="space-y-2">
-            <Link to="/login" className="text-blue-300 hover:underline hover:text-blue-600">
+            <Link
+              to="/"
+              className="text-blue-300 hover:underline hover:text-blue-600"
+            >
               Already have an account? Login
             </Link>
           </div>
           <Button type="submit" className="w-full">
+            {submitting && <LoaderCircle className="w-5 h-5" />}
             Register
           </Button>
         </form>

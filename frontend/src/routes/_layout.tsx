@@ -1,26 +1,31 @@
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {Label} from '@/components/ui/label'
+import {createFileRoute, Link, Outlet, useRouter} from '@tanstack/react-router'
+import {api, userQueryOptions} from '@/lib/api'
 import {useForm} from '@tanstack/react-form'
-import {
-  createFileRoute,
-  Link,
-  Navigate,
-  redirect,
-  useRouter,
-} from '@tanstack/react-router'
 import {zodValidator} from '@tanstack/zod-form-adapter'
-import {useMutation} from '@tanstack/react-query'
-import {api} from '@/lib/api'
+import {Label} from '@/components/ui/label'
+import {Input} from '@/components/ui/input'
 import FieldInfo from '@/components/utils/fieldInfo'
+import {Button} from '@/components/ui/button'
+import {LoaderCircle} from 'lucide-react'
 import {z} from 'zod'
-import React from 'react'
+import {useMutation} from '@tanstack/react-query'
 
-export const Route = createFileRoute('/login')({
-  validateSearch: z.object({
-    redirect: z.string().optional(),
-  }),
-  component: LoginComponent,
+export const Route = createFileRoute('/_layout')({
+  beforeLoad: async ({context}) => {
+    const queryClient = context.queryClient
+
+    try {
+      const data = await queryClient.fetchQuery(userQueryOptions)
+
+      return data
+    } catch (error) {
+      return {
+        user: null,
+      }
+    }
+  },
+
+  component: AuthedComponent,
 })
 
 const loginUserSchema = z.object({
@@ -28,8 +33,28 @@ const loginUserSchema = z.object({
   password: z.string().min(6),
 })
 
-function LoginComponent() {
+async function login(user: {email: string; password: string}) {
+  const res = await api.auth.login.$post({
+    form: user,
+  })
+  const data = await res.json()
+  return data
+}
+
+function Login() {
   const router = useRouter()
+
+  const {
+    data: user,
+    isPending: submitting,
+    mutate: loginUser,
+  } = useMutation({
+    mutationFn: login,
+    onSuccess: (data) => {
+      console.log('data', data)
+      router.invalidate()
+    },
+  })
 
   const form = useForm({
     defaultValues: {
@@ -41,44 +66,11 @@ function LoginComponent() {
       onChange: loginUserSchema,
     },
     onSubmit: async ({value}) => {
-      await loginUserMutation.mutateAsync({
-        form: {
-          email: value.email,
-          password: value.password,
-        },
-      })
+      loginUser(value)
     },
   })
 
-  const $login = api.auth.login.$post
-
-  const navigate = Route.useNavigate()
-
-  const loginUserMutation = useMutation({
-    mutationFn: $login,
-    onSuccess: () => {
-      navigate({
-        to: '/',
-      })
-      router.invalidate()
-    },
-  })
-
-  const {auth, isAuthenticated} = Route.useRouteContext({
-    select: ({auth}) => ({auth, isAuthenticated: auth.isAuthenticated}),
-  })
-
-  const search = Route.useSearch()
-
-  React.useLayoutEffect(() => {
-    if (isAuthenticated === true && search.redirect) {
-      router.history.push(search.redirect)
-    }
-  }, [isAuthenticated, search.redirect])
-
-  return auth.isAuthenticated ? (
-    <Navigate to="/" />
-  ) : (
+  return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
         <h1 className="text-3xl font-bold text-center">Login</h1>
@@ -128,26 +120,31 @@ function LoginComponent() {
               )}
             </form.Field>
           </div>
-          <div className="space-y-2">
-            {loginUserMutation.isError && (
-              <div className="text-red-500">
-                {loginUserMutation.error.message}
-              </div>
-            )}
-          </div>
+
           <div className="space-y-2">
             <Link
-              to="/register"
+              to="/auth/register"
               className="text-blue-400 hover:underline hover:text-blue-600"
             >
               Register
             </Link>
           </div>
           <Button type="submit" className="w-full">
+            {submitting && <LoaderCircle className="w-5 h-5" />}
             Login
           </Button>
         </form>
       </div>
     </div>
   )
+}
+
+function AuthedComponent() {
+  const {user} = Route.useRouteContext()
+
+  if (!user) {
+    return <Login />
+  }
+
+  return <Outlet />
 }
