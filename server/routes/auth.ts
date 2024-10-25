@@ -1,4 +1,4 @@
-import {Hono} from 'hono'
+import {Hono, type Context} from 'hono'
 import {config} from '../config'
 import bcrypt from 'bcrypt'
 import {zValidator} from '@hono/zod-validator'
@@ -7,15 +7,17 @@ import {db} from '../db'
 import {users} from '../db/schema'
 import {eq} from 'drizzle-orm'
 import {Jwt} from 'hono/utils/jwt'
-import {getCookie, setCookie} from 'hono/cookie'
+import {deleteCookie, getCookie, setCookie} from 'hono/cookie'
+import { sessisonManager } from '../utils/sessionManager'
+import type { UserProfile } from '../middleware/auth'
 
-const JWT_OPTIONS = {
-  expiresIn: config.jwt.accessExpirationMinutes,
-  httpOnly: true,
-  secure: config.env === 'production',
-  sameSite: 'Lax' as const,
-  path: '/',
-}
+// const JWT_OPTIONS = {
+//   expiresIn: config.jwt.accessExpirationMinutes,
+//   httpOnly: true,
+//   secure: config.env === 'production',
+//   sameSite: 'Lax' as const,
+//   path: '/',
+// }
 
 async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 10)
@@ -51,8 +53,8 @@ export const authRoutes = new Hono()
 
     return c.json(
       {
-        message: 'User created',
-        user: result[0],
+        message: 'User created successfully',
+        data: result[0],
       },
       201
     )
@@ -84,44 +86,31 @@ export const authRoutes = new Hono()
         return c.json({message: 'Invalid email or password'}, 400)
       }
 
+      const session = sessisonManager(c)
+
       const token = await Jwt.sign(
-        {
-          id: user[0].id,
-          email: user[0].email,
-          role: user[0].role,
-        },
+        {id: user[0].id, email: user[0].email, role: user[0].role},
         config.jwt.secret
       )
 
-      setCookie(c, 'token', token, JWT_OPTIONS)
-      return c.json(
-        {
-          message: 'Login successful',
-          user: {
-            id: user[0].id,
-            name: user[0].name,
-            email: user[0].email,
-            role: user[0].role,
-          },
-        },
-        200
-      )
+      await session.setSessionItem('token', token)
+
+      return c.json({message: 'Login successful'}, 200)
     }
   )
   .post('/logout', async (c) => {
-    setCookie(c, 'token', '', {...JWT_OPTIONS, maxAge: 0})
-    return c.json({message: 'Logout successful'})
+    const session = sessisonManager(c)
+    await session.destroySession()
+    return c.json({message: 'Logout successful'}, 200)
   })
-  .get('/check-auth', async (c) => {
-    const token = getCookie(c, 'token')
-    if (!token) {
-      return c.json({message: 'Not authenticated'}, 401)
+  .get('/me', async (c) => {
+    const session = sessisonManager(c)
+    const isAuthenticated = await session.getSessionItem('token')
+    if (!isAuthenticated) {
+      return c.json({message: 'Unauthorized'}, 401)
     }
+    const token = await session.getSessionItem('token')
+    const user = await Jwt.verify(token!, config.jwt.secret) as UserProfile
 
-    try {
-      const payload = await Jwt.verify(token, config.jwt.secret)
-      return c.json({message: 'Authenticated', user: payload}, 200)
-    } catch (error) {
-      return c.json({message: 'Not authenticated', user: null}, 401)
-    }
+    return c.json({user}, 200)
   })
