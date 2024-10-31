@@ -23,15 +23,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar'
-import {useNavigate} from '@tanstack/react-router'
-import {api} from '@/lib/api'
-import {useMutation, useQuery} from '@tanstack/react-query'
-
-async function logOutUser() {
-  const res = await api.auth.logout.$post()
-  const data = await res.json()
-  return data
-}
+import {useRouter} from '@tanstack/react-router'
 
 export function NavUser({
   user,
@@ -43,14 +35,6 @@ export function NavUser({
   }
 }>) {
   const {isMobile} = useSidebar()
-
-  const {mutate: handleLogout} = useMutation({
-    mutationFn: logOutUser,
-    retry: false,
-    onSuccess: () => {
-      window.location.href = '/login'
-    },
-  })
 
   return (
     <SidebarMenu>
@@ -115,10 +99,12 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleLogout()}>
-              <LogOut />
-              Log out
-            </DropdownMenuItem>
+            <a href="/api/auth/logout">
+              <DropdownMenuItem>
+                <LogOut />
+                Log out
+              </DropdownMenuItem>
+            </a>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>

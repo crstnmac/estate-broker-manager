@@ -1,4 +1,7 @@
 import {z} from 'zod'
+import type {ApiRoutes} from '../server/app'
+
+export {type ApiRoutes}
 
 export type SuccessResponse<T = void> = {
   success: true
@@ -19,3 +22,5 @@ export const loginSchema = z.object({
     .regex(/^[a-zA-Z0-9_]+$/),
   password: z.string().min(3).max(255),
 })
+
+

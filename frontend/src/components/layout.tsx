@@ -14,8 +14,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
-import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
-import {TanStackRouterDevtools} from '@tanstack/router-devtools'
 
 export default function Layout({
   children,
@@ -52,12 +50,6 @@ export default function Layout({
           <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
             {children}
           </div>
-          <ReactQueryDevtools
-            initialIsOpen={false}
-            buttonPosition="top-right"
-            position="right"
-          />
-          <TanStackRouterDevtools position="bottom-right" />
         </div>
       </SidebarInset>
     </SidebarProvider>
