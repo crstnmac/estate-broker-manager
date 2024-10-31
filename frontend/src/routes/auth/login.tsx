@@ -41,7 +41,7 @@ function Login() {
 
   const form = useForm({
     defaultValues: {
-      username: '',
+      email: '',
       password: '',
     },
     validatorAdapter: zodValidator(),
@@ -49,7 +49,7 @@ function Login() {
       onChange: loginSchema,
     },
     onSubmit: async ({value}) => {
-      const res = await postLogin(value.username, value.password)
+      const res = await postLogin(value.email, value.password)
       if (res.success) {
         queryClient.invalidateQueries({
           queryKey: ['user'],
@@ -87,13 +87,13 @@ function Login() {
           className="space-y-4"
         >
           <div className="space-y-2">
-            <form.Field name="username">
+            <form.Field name="email">
               {(field) => (
                 <>
                   <Label htmlFor={field.name}>Username</Label>
                   <Input
-                    id="username"
-                    type="text"
+                    id="email"
+                    type="email"
                     name={field.name}
                     value={field.state.value}
                     onBlur={field.handleBlur}

@@ -8,7 +8,7 @@ import {
 } from '@/utils/authUtils'
 import {userTable} from '@/db/schema'
 import {db} from '@/db'
-import {loginSchema, type SuccessResponse} from '@/shared/types'
+import {loginSchema, registerSchema, type SuccessResponse} from '@/shared/types'
 import {deleteCookie, setCookie} from 'hono/cookie'
 import postgres from 'postgres'
 import {HTTPException} from 'hono/http-exception'
@@ -17,15 +17,20 @@ import {loggedIn} from '@/middleware/loggedIn'
 import {config} from '@/config'
 
 export const authRouter = new Hono<Context>()
-  .post('/signup', zValidator('form', loginSchema), async (c) => {
-    const {username, password} = c.req.valid('form')
+  .post('/signup', zValidator('form', registerSchema), async (c) => {
+    const {username, name, email, password} = c.req.valid('form')
 
     const passwordHash = await Bun.password.hash(password) // Use Bun for hashing
 
     try {
       const res = await db
         .insert(userTable)
-        .values({username, password: passwordHash})
+        .values({
+          username,
+          name,
+          email,
+          password: passwordHash,
+        })
         .returning()
 
       const token = generateSessionToken()
@@ -70,12 +75,12 @@ export const authRouter = new Hono<Context>()
       }
     }),
     async (c) => {
-      const {username, password} = await c.req.valid('form')
+      const {email, password} = await c.req.valid('form')
 
       const [existingUser] = await db
         .select()
         .from(userTable)
-        .where(eq(userTable.username, username))
+        .where(eq(userTable.email, email))
         .limit(1)
 
       if (!existingUser) {
@@ -137,12 +142,16 @@ export const authRouter = new Hono<Context>()
     const user = c.get('user')!
     return c.json<
       SuccessResponse<{
+        email: string
+        name: string
         username: string
       }>
     >({
       success: true,
       data: {
         username: user.username,
+        name: user.name,
+        email: user.email,
       },
       message: 'User found',
     })

@@ -14,10 +14,14 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/components/ui/breadcrumb'
+import {useTSRBreadCrumbs} from '@/hooks/use-tsr-breadcrumbs'
+import {ChevronRight} from 'lucide-react'
 
 export default function Layout({
   children,
 }: Readonly<{children: React.ReactNode}>) {
+  const {breadcrumb_routes} = useTSRBreadCrumbs()
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -28,25 +32,42 @@ export default function Layout({
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
+                <BreadcrumbItem>
+                  <BreadcrumbLink href="/">
+                    <BreadcrumbPage>HOME</BreadcrumbPage>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
+                {breadcrumb_routes.map(({name, path}, i) => {
+                  if (
+                    breadcrumb_routes.length - 1 ===
+                    breadcrumb_routes?.indexOf(breadcrumb_routes[i])
+                  ) {
+                    return (
+                      <BreadcrumbItem key={path}>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbPage>
+                          {name.toLocaleUpperCase()}
+                        </BreadcrumbPage>
+                      </BreadcrumbItem>
+                    )
+                  }
+                  return (
+                    <BreadcrumbItem key={path}>
+                      <BreadcrumbSeparator />
+                      <BreadcrumbLink href={path}>
+                        <BreadcrumbPage>
+                          {name.toLocaleUpperCase()}
+                        </BreadcrumbPage>
+                      </BreadcrumbLink>
+                      <ChevronRight className="size-4" />
+                    </BreadcrumbItem>
+                  )
+                })}
               </BreadcrumbList>
             </Breadcrumb>
           </div>
         </header>
         <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          {/* <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-          </div> */}
           <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min">
             {children}
           </div>

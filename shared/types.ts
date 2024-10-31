@@ -14,13 +14,18 @@ export type ErrorResponse = {
   isFormError?: boolean
 }
 
-export const loginSchema = z.object({
+export const registerSchema = z.object({
   username: z
     .string()
     .min(3)
     .max(31)
     .regex(/^[a-zA-Z0-9_]+$/),
+  name: z.string().min(3).max(255),
+  email: z.string().email(),
   password: z.string().min(3).max(255),
 })
 
-
+export const loginSchema = z.object({
+  email: z.string().min(3).max(255),
+  password: z.string().min(3).max(255),
+})

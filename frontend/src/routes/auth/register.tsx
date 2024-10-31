@@ -1,8 +1,8 @@
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import {Button} from '@/components/ui/button'
+import {Input} from '@/components/ui/input'
+import {Label} from '@/components/ui/label'
 import FieldInfo from '@/components/utils/fieldInfo'
-import { useForm } from '@tanstack/react-form'
+import {useForm} from '@tanstack/react-form'
 import {
   createFileRoute,
   Link,
@@ -10,14 +10,14 @@ import {
   useNavigate,
   useRouter,
 } from '@tanstack/react-router'
-import { zodValidator } from '@tanstack/zod-form-adapter'
-import { z } from 'zod'
-import { LoaderCircle } from 'lucide-react'
-import { fallback, zodSearchValidator } from '@tanstack/router-zod-adapter'
-import { postSignup, userQueryOptions } from '@/lib/api'
-import { loginSchema } from '@/shared/types'
-import { useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
+import {zodValidator} from '@tanstack/zod-form-adapter'
+import {z} from 'zod'
+import {LoaderCircle} from 'lucide-react'
+import {fallback, zodSearchValidator} from '@tanstack/router-zod-adapter'
+import {postSignup, userQueryOptions} from '@/lib/api'
+import {loginSchema, registerSchema} from '@/shared/types'
+import {useQueryClient} from '@tanstack/react-query'
+import {toast} from 'sonner'
 
 const signupSearchSchema = z.object({
   redirect: fallback(z.string(), '/').default('/'),
@@ -26,7 +26,7 @@ const signupSearchSchema = z.object({
 export const Route = createFileRoute('/auth/register')({
   component: RegisterComponent,
   validateSearch: zodSearchValidator(signupSearchSchema),
-  beforeLoad: async ({ context, search }) => {
+  beforeLoad: async ({context, search}) => {
     const user = await context.queryClient.ensureQueryData(userQueryOptions())
     if (user) {
       throw redirect({
@@ -45,18 +45,26 @@ function RegisterComponent() {
   const form = useForm({
     defaultValues: {
       username: '',
+      name: '',
+      email: '',
       password: '',
     },
     validatorAdapter: zodValidator(),
     validators: {
-      onChange: loginSchema,
+      onChange: registerSchema,
     },
-    onSubmit: async ({ value }) => {
-      const res = await postSignup(value.username, value.password)
+    onSubmit: async ({value}) => {
+      const res = await postSignup(
+        value.username,
+        value.password,
+        value.email,
+        value.name
+      )
       if (res.success) {
-        await queryClient.invalidateQueries({ queryKey: ['user'] })
+        await queryClient.invalidateQueries({queryKey: ['user']})
         router.invalidate()
-        await navigate({ to: search.redirect })
+        window.location.reload()
+        await navigate({to: search.redirect})
         return null
       } else {
         if (!res.isFormError) {
@@ -88,7 +96,7 @@ function RegisterComponent() {
             <form.Field name="username">
               {(field) => (
                 <>
-                  <Label htmlFor={field.name}>Name</Label>
+                  <Label htmlFor={field.name}>Username</Label>
                   <Input
                     id="username"
                     type="text"
@@ -97,6 +105,44 @@ function RegisterComponent() {
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
                     placeholder="Enter your username"
+                  />
+                  <FieldInfo field={field} />
+                </>
+              )}
+            </form.Field>
+          </div>
+          <div className="space-y-2">
+            <form.Field name="name">
+              {(field) => (
+                <>
+                  <Label htmlFor={field.name}>Full Name</Label>
+                  <Input
+                    id="name"
+                    type="text"
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    placeholder="Enter your name"
+                  />
+                  <FieldInfo field={field} />
+                </>
+              )}
+            </form.Field>
+          </div>
+          <div className="space-y-2">
+            <form.Field name="email">
+              {(field) => (
+                <>
+                  <Label htmlFor={field.name}>Email</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    name={field.name}
+                    value={field.state.value}
+                    onBlur={field.handleBlur}
+                    onChange={(e) => field.handleChange(e.target.value)}
+                    placeholder="Enter your email"
                   />
                   <FieldInfo field={field} />
                 </>

@@ -27,11 +27,6 @@ import {useQuery} from '@tanstack/react-query'
 import {Link} from '@tanstack/react-router'
 
 const data = {
-  user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
-  },
   navMain: [
     {
       title: 'Home',
@@ -92,7 +87,9 @@ const data = {
 }
 
 export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
-  const {data: user} = useQuery(userQueryOptions())
+  const { data:user } = useQuery(userQueryOptions())
+  
+  console.log(user)
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -100,7 +97,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <Link href='/'>
+              <Link href="/">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                   <Command className="size-4" />
                 </div>
@@ -121,9 +118,9 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <NavUser
           user={{
-            avatar: '/avatars/shadcn.jpg',
-            email: user || '',
-            name: user || '',
+            avatar: 'https://api.dicebear.com/9.x/lorelei/svg?seed=Avery',
+            email: user?.email || '',
+            name: user?.name || '',
           }}
         />
       </SidebarFooter>

@@ -28,7 +28,7 @@ function RootComponent() {
       <Outlet />
       <Toaster />
       <ReactQueryDevtools />
-      <TanstackRouterDevtools position="bottom-left" />
+      <TanstackRouterDevtools position="top-right" />
     </>
   )
 }

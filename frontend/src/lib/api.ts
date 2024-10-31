@@ -10,12 +10,19 @@ const client = hc<ApiRoutes>('/', {
     }),
 }).api
 
-export const postSignup = async (username: string, password: string) => {
+export const postSignup = async (
+  username: string,
+  password: string,
+  email: string,
+  name: string
+) => {
   try {
     const res = await client.auth.signup.$post({
       form: {
         username,
         password,
+        email,
+        name,
       },
     })
     if (res.ok) {
@@ -34,11 +41,11 @@ export const postSignup = async (username: string, password: string) => {
   }
 }
 
-export const postLogin = async (username: string, password: string) => {
+export const postLogin = async (email: string, password: string) => {
   try {
     const res = await client.auth.login.$post({
       form: {
-        username,
+        email,
         password,
       },
     })
@@ -62,7 +69,11 @@ export const getUser = async () => {
   const res = await client.auth.user.$get()
   if (res.ok) {
     const data = await res.json()
-    return data.data.username
+    return {
+      username: data.data.username,
+      email: data.data.email,
+      name: data.data.name,
+    }
   }
   return null
 }
