@@ -1,6 +1,8 @@
-import {postLogin, userQueryOptions} from '@/lib/api'
-import {useForm} from '@tanstack/react-form'
-import {useQueryClient} from '@tanstack/react-query'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import FieldInfo from '@/components/utils/fieldInfo'
+import { useForm } from '@tanstack/react-form'
 import {
   createFileRoute,
   Link,
@@ -8,37 +10,36 @@ import {
   useNavigate,
   useRouter,
 } from '@tanstack/react-router'
-import {zodValidator} from '@tanstack/zod-form-adapter'
-import {z} from 'zod'
-import {fallback, zodSearchValidator} from '@tanstack/router-zod-adapter'
+import { zodValidator } from '@tanstack/zod-form-adapter'
+import { z } from 'zod'
+import { LoaderCircle } from 'lucide-react'
+import { fallback, zodSearchValidator } from '@tanstack/router-zod-adapter'
+import { postSignup, userQueryOptions } from '@/lib/api'
+import { loginSchema } from '@/shared/types'
+import { useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
-import {toast} from 'sonner'
-import {Label} from '@/components/ui/label'
-import {Input} from '@/components/ui/input'
-import FieldInfo from '@/components/utils/fieldInfo'
-import {Button} from '@/components/ui/button'
-import {LoaderCircle} from 'lucide-react'
-import {loginSchema} from '@/shared/types'
-
-const loginSearchSchema = z.object({
-  redirect: fallback(z.string(), '/properties').default('/'),
+const signupSearchSchema = z.object({
+  redirect: fallback(z.string(), '/').default('/'),
 })
 
-export const Route = createFileRoute('/login')({
-  component: Login,
-  validateSearch: zodSearchValidator(loginSearchSchema),
-  beforeLoad: async ({context, search}) => {
+export const Route = createFileRoute('/auth/register')({
+  component: RegisterComponent,
+  validateSearch: zodSearchValidator(signupSearchSchema),
+  beforeLoad: async ({ context, search }) => {
     const user = await context.queryClient.ensureQueryData(userQueryOptions())
     if (user) {
-      throw redirect({to: search.redirect})
+      throw redirect({
+        to: search.redirect,
+      })
     }
   },
 })
 
-function Login() {
-  const router = useRouter()
+function RegisterComponent() {
   const search = Route.useSearch()
   const navigate = useNavigate()
+  const router = useRouter()
   const queryClient = useQueryClient()
 
   const form = useForm({
@@ -50,20 +51,16 @@ function Login() {
     validators: {
       onChange: loginSchema,
     },
-    onSubmit: async ({value}) => {
-      const res = await postLogin(value.username, value.password)
+    onSubmit: async ({ value }) => {
+      const res = await postSignup(value.username, value.password)
       if (res.success) {
-        queryClient.invalidateQueries({
-          queryKey: ['user'],
-        })
+        await queryClient.invalidateQueries({ queryKey: ['user'] })
         router.invalidate()
-        navigate({
-          to: search.redirect,
-        })
+        await navigate({ to: search.redirect })
         return null
       } else {
         if (!res.isFormError) {
-          toast.error('Login failed. Please try again.', {
+          toast.error('Signup failed', {
             description: res.error,
           })
         }
@@ -77,7 +74,8 @@ function Login() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold text-center">Login</h1>
+        <h1 className="text-3xl font-bold text-center">Register</h1>
+
         <form
           onSubmit={(e) => {
             e.preventDefault()
@@ -90,7 +88,7 @@ function Login() {
             <form.Field name="username">
               {(field) => (
                 <>
-                  <Label htmlFor={field.name}>Username</Label>
+                  <Label htmlFor={field.name}>Name</Label>
                   <Input
                     id="username"
                     type="text"
@@ -124,6 +122,7 @@ function Login() {
               )}
             </form.Field>
           </div>
+
           <form.Subscribe selector={(state) => [state.errorMap]}>
             {([errorMap]) =>
               errorMap.onSubmit ? (
@@ -143,17 +142,17 @@ function Login() {
                 {isSubmitting && (
                   <LoaderCircle className="w-5 h-5 animate-spin" />
                 )}
-                Login
+                Signup
               </Button>
             )}
           </form.Subscribe>
+
           <div className="space-y-2">
-            Dont hasve an account?{''}
             <Link
-              to="/register"
-              className="text-blue-400 hover:underline hover:text-blue-600"
+              to="/"
+              className="text-blue-300 hover:underline hover:text-blue-600"
             >
-              Sign up
+              Already have an account? Login
             </Link>
           </div>
         </form>

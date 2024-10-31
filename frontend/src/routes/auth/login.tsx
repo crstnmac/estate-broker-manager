@@ -1,45 +1,42 @@
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import FieldInfo from '@/components/utils/fieldInfo'
-import { useForm } from '@tanstack/react-form'
+import {postLogin, userQueryOptions} from '@/lib/api'
+import {useForm} from '@tanstack/react-form'
+import {useQueryClient} from '@tanstack/react-query'
 import {
   createFileRoute,
   Link,
   redirect,
   useNavigate,
-  useRouter,
 } from '@tanstack/react-router'
-import { zodValidator } from '@tanstack/zod-form-adapter'
-import { z } from 'zod'
-import { LoaderCircle } from 'lucide-react'
-import { fallback, zodSearchValidator } from '@tanstack/router-zod-adapter'
-import { postSignup, userQueryOptions } from '@/lib/api'
-import { loginSchema } from '@/shared/types'
-import { useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
+import {zodValidator} from '@tanstack/zod-form-adapter'
+import {z} from 'zod'
+import {fallback, zodSearchValidator} from '@tanstack/router-zod-adapter'
 
-const signupSearchSchema = z.object({
+import {toast} from 'sonner'
+import {Label} from '@/components/ui/label'
+import {Input} from '@/components/ui/input'
+import FieldInfo from '@/components/utils/fieldInfo'
+import {Button} from '@/components/ui/button'
+import {LoaderCircle} from 'lucide-react'
+import {loginSchema} from '@/shared/types'
+
+const loginSearchSchema = z.object({
   redirect: fallback(z.string(), '/').default('/'),
 })
 
-export const Route = createFileRoute('/register')({
-  component: RegisterComponent,
-  validateSearch: zodSearchValidator(signupSearchSchema),
-  beforeLoad: async ({ context, search }) => {
+export const Route = createFileRoute('/auth/login')({
+  component: Login,
+  validateSearch: zodSearchValidator(loginSearchSchema),
+  beforeLoad: async ({context, search}) => {
     const user = await context.queryClient.ensureQueryData(userQueryOptions())
     if (user) {
-      throw redirect({
-        to: search.redirect,
-      })
+      throw redirect({to: search.redirect})
     }
   },
 })
 
-function RegisterComponent() {
+function Login() {
   const search = Route.useSearch()
   const navigate = useNavigate()
-  const router = useRouter()
   const queryClient = useQueryClient()
 
   const form = useForm({
@@ -51,16 +48,22 @@ function RegisterComponent() {
     validators: {
       onChange: loginSchema,
     },
-    onSubmit: async ({ value }) => {
-      const res = await postSignup(value.username, value.password)
+    onSubmit: async ({value}) => {
+      const res = await postLogin(value.username, value.password)
       if (res.success) {
-        await queryClient.invalidateQueries({ queryKey: ['user'] })
-        router.invalidate()
-        await navigate({ to: search.redirect })
+        queryClient.invalidateQueries({
+          queryKey: ['user'],
+        })
+        // await router.invalidate()
+        window.location.reload()
+
+        await navigate({
+          to: search.redirect,
+        })
         return null
       } else {
         if (!res.isFormError) {
-          toast.error('Signup failed', {
+          toast.error('Login failed. Please try again.', {
             description: res.error,
           })
         }
@@ -74,8 +77,7 @@ function RegisterComponent() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold text-center">Register</h1>
-
+        <h1 className="text-3xl font-bold text-center">Login</h1>
         <form
           onSubmit={(e) => {
             e.preventDefault()
@@ -88,7 +90,7 @@ function RegisterComponent() {
             <form.Field name="username">
               {(field) => (
                 <>
-                  <Label htmlFor={field.name}>Name</Label>
+                  <Label htmlFor={field.name}>Username</Label>
                   <Input
                     id="username"
                     type="text"
@@ -122,7 +124,6 @@ function RegisterComponent() {
               )}
             </form.Field>
           </div>
-
           <form.Subscribe selector={(state) => [state.errorMap]}>
             {([errorMap]) =>
               errorMap.onSubmit ? (
@@ -142,17 +143,17 @@ function RegisterComponent() {
                 {isSubmitting && (
                   <LoaderCircle className="w-5 h-5 animate-spin" />
                 )}
-                Signup
+                Login
               </Button>
             )}
           </form.Subscribe>
-
           <div className="space-y-2">
+            Don't have an account?{''}
             <Link
-              to="/"
-              className="text-blue-300 hover:underline hover:text-blue-600"
+              to="/auth/register"
+              className="text-blue-400 hover:underline hover:text-blue-600"
             >
-              Already have an account? Login
+              Sign up
             </Link>
           </div>
         </form>

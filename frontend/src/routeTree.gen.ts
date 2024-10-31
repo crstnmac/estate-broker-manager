@@ -11,28 +11,16 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as RegisterImport } from './routes/register'
-import { Route as LoginImport } from './routes/login'
 import { Route as LayoutImport } from './routes/_layout'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
+import { Route as AuthRegisterImport } from './routes/auth/register'
+import { Route as AuthLoginImport } from './routes/auth/login'
 import { Route as LayoutReportsImport } from './routes/_layout/reports'
 import { Route as LayoutPropertiesImport } from './routes/_layout/properties'
 import { Route as LayoutClientsImport } from './routes/_layout/clients'
 import { Route as LayoutCalendarImport } from './routes/_layout/calendar'
 
 // Create/Update Routes
-
-const RegisterRoute = RegisterImport.update({
-  id: '/register',
-  path: '/register',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const LoginRoute = LoginImport.update({
-  id: '/login',
-  path: '/login',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const LayoutRoute = LayoutImport.update({
   id: '/_layout',
@@ -43,6 +31,18 @@ const LayoutIndexRoute = LayoutIndexImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => LayoutRoute,
+} as any)
+
+const AuthRegisterRoute = AuthRegisterImport.update({
+  id: '/auth/register',
+  path: '/auth/register',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthLoginRoute = AuthLoginImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRoute,
 } as any)
 
 const LayoutReportsRoute = LayoutReportsImport.update({
@@ -80,20 +80,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutImport
       parentRoute: typeof rootRoute
     }
-    '/login': {
-      id: '/login'
-      path: '/login'
-      fullPath: '/login'
-      preLoaderRoute: typeof LoginImport
-      parentRoute: typeof rootRoute
-    }
-    '/register': {
-      id: '/register'
-      path: '/register'
-      fullPath: '/register'
-      preLoaderRoute: typeof RegisterImport
-      parentRoute: typeof rootRoute
-    }
     '/_layout/calendar': {
       id: '/_layout/calendar'
       path: '/calendar'
@@ -121,6 +107,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/reports'
       preLoaderRoute: typeof LayoutReportsImport
       parentRoute: typeof LayoutImport
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginImport
+      parentRoute: typeof rootRoute
+    }
+    '/auth/register': {
+      id: '/auth/register'
+      path: '/auth/register'
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthRegisterImport
+      parentRoute: typeof rootRoute
     }
     '/_layout/': {
       id: '/_layout/'
@@ -155,34 +155,34 @@ const LayoutRouteWithChildren =
 
 export interface FileRoutesByFullPath {
   '': typeof LayoutRouteWithChildren
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
   '/calendar': typeof LayoutCalendarRoute
   '/clients': typeof LayoutClientsRoute
   '/properties': typeof LayoutPropertiesRoute
   '/reports': typeof LayoutReportsRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
   '/': typeof LayoutIndexRoute
 }
 
 export interface FileRoutesByTo {
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
   '/calendar': typeof LayoutCalendarRoute
   '/clients': typeof LayoutClientsRoute
   '/properties': typeof LayoutPropertiesRoute
   '/reports': typeof LayoutReportsRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
   '/': typeof LayoutIndexRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/_layout': typeof LayoutRouteWithChildren
-  '/login': typeof LoginRoute
-  '/register': typeof RegisterRoute
   '/_layout/calendar': typeof LayoutCalendarRoute
   '/_layout/clients': typeof LayoutClientsRoute
   '/_layout/properties': typeof LayoutPropertiesRoute
   '/_layout/reports': typeof LayoutReportsRoute
+  '/auth/login': typeof AuthLoginRoute
+  '/auth/register': typeof AuthRegisterRoute
   '/_layout/': typeof LayoutIndexRoute
 }
 
@@ -190,45 +190,45 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | ''
-    | '/login'
-    | '/register'
     | '/calendar'
     | '/clients'
     | '/properties'
     | '/reports'
+    | '/auth/login'
+    | '/auth/register'
     | '/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/login'
-    | '/register'
     | '/calendar'
     | '/clients'
     | '/properties'
     | '/reports'
+    | '/auth/login'
+    | '/auth/register'
     | '/'
   id:
     | '__root__'
     | '/_layout'
-    | '/login'
-    | '/register'
     | '/_layout/calendar'
     | '/_layout/clients'
     | '/_layout/properties'
     | '/_layout/reports'
+    | '/auth/login'
+    | '/auth/register'
     | '/_layout/'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   LayoutRoute: typeof LayoutRouteWithChildren
-  LoginRoute: typeof LoginRoute
-  RegisterRoute: typeof RegisterRoute
+  AuthLoginRoute: typeof AuthLoginRoute
+  AuthRegisterRoute: typeof AuthRegisterRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   LayoutRoute: LayoutRouteWithChildren,
-  LoginRoute: LoginRoute,
-  RegisterRoute: RegisterRoute,
+  AuthLoginRoute: AuthLoginRoute,
+  AuthRegisterRoute: AuthRegisterRoute,
 }
 
 export const routeTree = rootRoute
@@ -244,8 +244,8 @@ export const routeTree = rootRoute
       "filePath": "__root.tsx",
       "children": [
         "/_layout",
-        "/login",
-        "/register"
+        "/auth/login",
+        "/auth/register"
       ]
     },
     "/_layout": {
@@ -257,12 +257,6 @@ export const routeTree = rootRoute
         "/_layout/reports",
         "/_layout/"
       ]
-    },
-    "/login": {
-      "filePath": "login.tsx"
-    },
-    "/register": {
-      "filePath": "register.tsx"
     },
     "/_layout/calendar": {
       "filePath": "_layout/calendar.tsx",
@@ -279,6 +273,12 @@ export const routeTree = rootRoute
     "/_layout/reports": {
       "filePath": "_layout/reports.tsx",
       "parent": "/_layout"
+    },
+    "/auth/login": {
+      "filePath": "auth/login.tsx"
+    },
+    "/auth/register": {
+      "filePath": "auth/register.tsx"
     },
     "/_layout/": {
       "filePath": "_layout/index.tsx",

@@ -23,7 +23,6 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar'
-import {useRouter} from '@tanstack/react-router'
 
 export function NavUser({
   user,

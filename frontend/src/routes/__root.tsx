@@ -2,7 +2,6 @@ import * as React from 'react'
 
 import {QueryClient} from '@tanstack/react-query'
 import {createRootRouteWithContext, Outlet} from '@tanstack/react-router'
-import Layout from '@/components/layout'
 import {Toaster} from 'sonner'
 import {ReactQueryDevtools} from '@tanstack/react-query-devtools'
 
