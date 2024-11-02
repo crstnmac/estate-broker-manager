@@ -15,8 +15,13 @@ import { Route as LayoutImport } from './routes/_layout'
 import { Route as LayoutIndexImport } from './routes/_layout/index'
 import { Route as AuthRegisterImport } from './routes/auth/register'
 import { Route as AuthLoginImport } from './routes/auth/login'
+import { Route as LayoutTeamsImport } from './routes/_layout/teams'
+import { Route as LayoutTasksImport } from './routes/_layout/tasks'
+import { Route as LayoutSettingsImport } from './routes/_layout/settings'
 import { Route as LayoutReportsImport } from './routes/_layout/reports'
 import { Route as LayoutPropertiesImport } from './routes/_layout/properties'
+import { Route as LayoutMessagesImport } from './routes/_layout/messages'
+import { Route as LayoutDocumentsImport } from './routes/_layout/documents'
 import { Route as LayoutClientsImport } from './routes/_layout/clients'
 import { Route as LayoutCalendarImport } from './routes/_layout/calendar'
 
@@ -45,6 +50,24 @@ const AuthLoginRoute = AuthLoginImport.update({
   getParentRoute: () => rootRoute,
 } as any)
 
+const LayoutTeamsRoute = LayoutTeamsImport.update({
+  id: '/teams',
+  path: '/teams',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutTasksRoute = LayoutTasksImport.update({
+  id: '/tasks',
+  path: '/tasks',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutSettingsRoute = LayoutSettingsImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
 const LayoutReportsRoute = LayoutReportsImport.update({
   id: '/reports',
   path: '/reports',
@@ -54,6 +77,18 @@ const LayoutReportsRoute = LayoutReportsImport.update({
 const LayoutPropertiesRoute = LayoutPropertiesImport.update({
   id: '/properties',
   path: '/properties',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutMessagesRoute = LayoutMessagesImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutDocumentsRoute = LayoutDocumentsImport.update({
+  id: '/documents',
+  path: '/documents',
   getParentRoute: () => LayoutRoute,
 } as any)
 
@@ -94,6 +129,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutClientsImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/documents': {
+      id: '/_layout/documents'
+      path: '/documents'
+      fullPath: '/documents'
+      preLoaderRoute: typeof LayoutDocumentsImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/messages': {
+      id: '/_layout/messages'
+      path: '/messages'
+      fullPath: '/messages'
+      preLoaderRoute: typeof LayoutMessagesImport
+      parentRoute: typeof LayoutImport
+    }
     '/_layout/properties': {
       id: '/_layout/properties'
       path: '/properties'
@@ -106,6 +155,27 @@ declare module '@tanstack/react-router' {
       path: '/reports'
       fullPath: '/reports'
       preLoaderRoute: typeof LayoutReportsImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/settings': {
+      id: '/_layout/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof LayoutSettingsImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/tasks': {
+      id: '/_layout/tasks'
+      path: '/tasks'
+      fullPath: '/tasks'
+      preLoaderRoute: typeof LayoutTasksImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/teams': {
+      id: '/_layout/teams'
+      path: '/teams'
+      fullPath: '/teams'
+      preLoaderRoute: typeof LayoutTeamsImport
       parentRoute: typeof LayoutImport
     }
     '/auth/login': {
@@ -137,16 +207,26 @@ declare module '@tanstack/react-router' {
 interface LayoutRouteChildren {
   LayoutCalendarRoute: typeof LayoutCalendarRoute
   LayoutClientsRoute: typeof LayoutClientsRoute
+  LayoutDocumentsRoute: typeof LayoutDocumentsRoute
+  LayoutMessagesRoute: typeof LayoutMessagesRoute
   LayoutPropertiesRoute: typeof LayoutPropertiesRoute
   LayoutReportsRoute: typeof LayoutReportsRoute
+  LayoutSettingsRoute: typeof LayoutSettingsRoute
+  LayoutTasksRoute: typeof LayoutTasksRoute
+  LayoutTeamsRoute: typeof LayoutTeamsRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutCalendarRoute: LayoutCalendarRoute,
   LayoutClientsRoute: LayoutClientsRoute,
+  LayoutDocumentsRoute: LayoutDocumentsRoute,
+  LayoutMessagesRoute: LayoutMessagesRoute,
   LayoutPropertiesRoute: LayoutPropertiesRoute,
   LayoutReportsRoute: LayoutReportsRoute,
+  LayoutSettingsRoute: LayoutSettingsRoute,
+  LayoutTasksRoute: LayoutTasksRoute,
+  LayoutTeamsRoute: LayoutTeamsRoute,
   LayoutIndexRoute: LayoutIndexRoute,
 }
 
@@ -157,8 +237,13 @@ export interface FileRoutesByFullPath {
   '': typeof LayoutRouteWithChildren
   '/calendar': typeof LayoutCalendarRoute
   '/clients': typeof LayoutClientsRoute
+  '/documents': typeof LayoutDocumentsRoute
+  '/messages': typeof LayoutMessagesRoute
   '/properties': typeof LayoutPropertiesRoute
   '/reports': typeof LayoutReportsRoute
+  '/settings': typeof LayoutSettingsRoute
+  '/tasks': typeof LayoutTasksRoute
+  '/teams': typeof LayoutTeamsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/': typeof LayoutIndexRoute
@@ -167,8 +252,13 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/calendar': typeof LayoutCalendarRoute
   '/clients': typeof LayoutClientsRoute
+  '/documents': typeof LayoutDocumentsRoute
+  '/messages': typeof LayoutMessagesRoute
   '/properties': typeof LayoutPropertiesRoute
   '/reports': typeof LayoutReportsRoute
+  '/settings': typeof LayoutSettingsRoute
+  '/tasks': typeof LayoutTasksRoute
+  '/teams': typeof LayoutTeamsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/': typeof LayoutIndexRoute
@@ -179,8 +269,13 @@ export interface FileRoutesById {
   '/_layout': typeof LayoutRouteWithChildren
   '/_layout/calendar': typeof LayoutCalendarRoute
   '/_layout/clients': typeof LayoutClientsRoute
+  '/_layout/documents': typeof LayoutDocumentsRoute
+  '/_layout/messages': typeof LayoutMessagesRoute
   '/_layout/properties': typeof LayoutPropertiesRoute
   '/_layout/reports': typeof LayoutReportsRoute
+  '/_layout/settings': typeof LayoutSettingsRoute
+  '/_layout/tasks': typeof LayoutTasksRoute
+  '/_layout/teams': typeof LayoutTeamsRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/_layout/': typeof LayoutIndexRoute
@@ -192,8 +287,13 @@ export interface FileRouteTypes {
     | ''
     | '/calendar'
     | '/clients'
+    | '/documents'
+    | '/messages'
     | '/properties'
     | '/reports'
+    | '/settings'
+    | '/tasks'
+    | '/teams'
     | '/auth/login'
     | '/auth/register'
     | '/'
@@ -201,8 +301,13 @@ export interface FileRouteTypes {
   to:
     | '/calendar'
     | '/clients'
+    | '/documents'
+    | '/messages'
     | '/properties'
     | '/reports'
+    | '/settings'
+    | '/tasks'
+    | '/teams'
     | '/auth/login'
     | '/auth/register'
     | '/'
@@ -211,8 +316,13 @@ export interface FileRouteTypes {
     | '/_layout'
     | '/_layout/calendar'
     | '/_layout/clients'
+    | '/_layout/documents'
+    | '/_layout/messages'
     | '/_layout/properties'
     | '/_layout/reports'
+    | '/_layout/settings'
+    | '/_layout/tasks'
+    | '/_layout/teams'
     | '/auth/login'
     | '/auth/register'
     | '/_layout/'
@@ -253,8 +363,13 @@ export const routeTree = rootRoute
       "children": [
         "/_layout/calendar",
         "/_layout/clients",
+        "/_layout/documents",
+        "/_layout/messages",
         "/_layout/properties",
         "/_layout/reports",
+        "/_layout/settings",
+        "/_layout/tasks",
+        "/_layout/teams",
         "/_layout/"
       ]
     },
@@ -266,12 +381,32 @@ export const routeTree = rootRoute
       "filePath": "_layout/clients.tsx",
       "parent": "/_layout"
     },
+    "/_layout/documents": {
+      "filePath": "_layout/documents.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/messages": {
+      "filePath": "_layout/messages.tsx",
+      "parent": "/_layout"
+    },
     "/_layout/properties": {
       "filePath": "_layout/properties.tsx",
       "parent": "/_layout"
     },
     "/_layout/reports": {
       "filePath": "_layout/reports.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/settings": {
+      "filePath": "_layout/settings.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/tasks": {
+      "filePath": "_layout/tasks.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/teams": {
+      "filePath": "_layout/teams.tsx",
       "parent": "/_layout"
     },
     "/auth/login": {

@@ -2,12 +2,15 @@ import * as React from 'react'
 import {
   BookOpen,
   Command,
+  FilesIcon,
   Frame,
   LifeBuoy,
   Map,
+  MessagesSquareIcon,
   PieChart,
   Send,
   SquareTerminal,
+  User2Icon,
   Users,
 } from 'lucide-react'
 
@@ -54,6 +57,26 @@ const data = {
       url: '/reports',
       icon: PieChart,
     },
+    {
+      title: 'Documents',
+      url: '/documents',
+      icon: FilesIcon,
+    },
+    {
+      title: 'Messages',
+      url: '/messages',
+      icon: MessagesSquareIcon
+    },
+    {
+      title: 'Team',
+      url: '/teams',
+      icon: User2Icon,
+    },
+    {
+      title: 'Tasks',
+      url: '/tasks',
+      icon: LifeBuoy,
+    }
   ],
   navSecondary: [
     {
@@ -89,8 +112,6 @@ const data = {
 export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
   const { data:user } = useQuery(userQueryOptions())
   
-  console.log(user)
-
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
