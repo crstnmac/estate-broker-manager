@@ -6,6 +6,7 @@ import {
   Link,
   redirect,
   useNavigate,
+  useRouter,
 } from '@tanstack/react-router'
 import {zodValidator} from '@tanstack/zod-form-adapter'
 import {z} from 'zod'
@@ -38,6 +39,7 @@ function Login() {
   const search = Route.useSearch()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const router = useRouter()
 
   const form = useForm({
     defaultValues: {
@@ -54,8 +56,8 @@ function Login() {
         queryClient.invalidateQueries({
           queryKey: ['user'],
         })
-        // await router.invalidate()
-        window.location.reload()
+        await router.invalidate()
+        // window.location.reload()
 
         await navigate({
           to: search.redirect,
