@@ -27,8 +27,8 @@ RUN apt-get update -qq && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy package files
-COPY package.json bun.lockb ./
-COPY frontend/package.json frontend/bun.lockb ./frontend/
+COPY package.json ./
+COPY frontend/package.json ./frontend/
 
 # Install dependencies
 RUN bun install --ci
