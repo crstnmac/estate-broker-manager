@@ -56,8 +56,8 @@ function Login() {
         queryClient.invalidateQueries({
           queryKey: ['user'],
         })
-        await router.invalidate()
-        // window.location.reload()
+        // await router.invalidate()
+        window.location.reload()
 
         await navigate({
           to: search.redirect,

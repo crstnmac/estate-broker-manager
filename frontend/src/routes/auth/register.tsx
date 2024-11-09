@@ -62,8 +62,8 @@ function RegisterComponent() {
       )
       if (res.success) {
         await queryClient.invalidateQueries({queryKey: ['user']})
-        router.invalidate()
-        // window.location.reload()
+        // router.invalidate()
+        window.location.reload()
         await navigate({to: search.redirect})
         return null
       } else {
