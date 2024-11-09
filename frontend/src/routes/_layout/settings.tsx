@@ -35,7 +35,7 @@ function SettingsProfile() {
               <div className="flex items-center space-x-4">
                 <Avatar className="h-20 w-20">
                   <AvatarImage
-                    src="/placeholder-avatar.jpg"
+                    src={user?.avatar}
                     alt="Profile picture"
                   />
                   <AvatarFallback>JD</AvatarFallback>
@@ -45,19 +45,19 @@ function SettingsProfile() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="firstName">First Name</Label>
-                  <Input id="firstName" value={user?.name.split(' ')[0]} />
+                  <Input id="firstName" defaultValue={user?.name.split(' ')[0]} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="lastName">Last Name</Label>
-                  <Input id="lastName" value={user?.name.split(' ')[1]} />
+                  <Input id="lastName" defaultValue={user?.name.split(' ')[1]} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" value={user?.email} />
+                  <Input id="email" type="email" defaultValue={user?.email} />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone</Label>
-                  <Input id="phone" type="tel" defaultValue="(123) 456-7890" />
+                  <Input id="phone" type="tel" defaultValue={user?.phone} />
                 </div>
               </div>
               <Button>Save Changes</Button>

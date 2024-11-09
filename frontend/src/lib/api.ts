@@ -73,6 +73,8 @@ export const getUser = async () => {
       username: data.data.username,
       email: data.data.email,
       name: data.data.name,
+      avatar: data.data.avatar,
+      phone: data.data.phone,
     }
   }
   return null

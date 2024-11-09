@@ -145,6 +145,8 @@ export const authRouter = new Hono<Context>()
         email: string
         name: string
         username: string
+        avatar: string
+        phone: string
       }>
     >({
       success: true,
@@ -152,6 +154,8 @@ export const authRouter = new Hono<Context>()
         username: user.username,
         name: user.name,
         email: user.email,
+        avatar: user.avatar,
+        phone: user.phone ?? '',
       },
       message: 'User found',
     })

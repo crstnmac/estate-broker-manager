@@ -6,17 +6,21 @@
     "start": "bun server/index.ts",
     "dev": "bun run --hot server/index.ts",
     "prod": "pm2 start --interpreter ~/.bun/bin/bun server/index.ts",
-    "kill": "pm2 delete server/index.ts"
+    "kill": "pm2 delete server/index.ts",
+    "build:frontend": "cd frontend && bun run build"
   },
+  "workspaces": [
+    "frontend"
+  ],
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",
     "@types/bun": "latest",
     "@types/pg": "^8.11.10",
-    "drizzle-kit": "^0.27.0",
+    "drizzle-kit": "^0.28.0",
     "tsx": "^4.19.2"
   },
   "peerDependencies": {
-    "typescript": "^5.0.0"
+    "typescript": "^5.6.3"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.4.1",
@@ -24,11 +28,12 @@
     "@oslojs/encoding": "^1.1.0",
     "bcrypt": "^5.1.1",
     "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.36.0",
+    "drizzle-orm": "^0.36.1",
     "drizzle-zod": "^0.5.1",
-    "hono": "^4.6.8",
+    "hono": "^4.6.9",
     "pg": "^8.13.1",
     "postgres": "^3.4.5",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "frontend": "workspace:*"
   }
 }

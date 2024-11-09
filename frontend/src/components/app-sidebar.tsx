@@ -139,7 +139,7 @@ export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
       <SidebarFooter>
         <NavUser
           user={{
-            avatar: 'https://api.dicebear.com/9.x/lorelei/svg?seed=Avery',
+            avatar:  user?.avatar || 'https://api.dicebear.com/9.x/lorelei/svg?seed=Avery',
             email: user?.email || '',
             name: user?.name || '',
           }}

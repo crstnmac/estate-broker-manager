@@ -13,11 +13,12 @@ import {
   validateSessionToken,
 } from './utils/authUtils'
 import {authRouter} from './routes/auth'
+import { prettyJSON } from 'hono/pretty-json'
 
 const app = new Hono<Context>()
 
 app.use('*', logger())
-
+app.use('*', prettyJSON())
 app.use(
   '*',
   cors({origin: config.appOrigin!, credentials: true}),
