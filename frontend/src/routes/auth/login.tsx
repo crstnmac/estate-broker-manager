@@ -1,6 +1,6 @@
-import {postLogin, userQueryOptions} from '@/lib/api'
-import {useForm} from '@tanstack/react-form'
-import {useQueryClient} from '@tanstack/react-query'
+import { postLogin, userQueryOptions } from '@/lib/api'
+import { useForm } from '@tanstack/react-form'
+import { useQueryClient } from '@tanstack/react-query'
 import {
   createFileRoute,
   Link,
@@ -8,17 +8,17 @@ import {
   useNavigate,
   useRouter,
 } from '@tanstack/react-router'
-import {zodValidator} from '@tanstack/zod-form-adapter'
-import {z} from 'zod'
-import {fallback, zodSearchValidator} from '@tanstack/router-zod-adapter'
+import { zodValidator } from '@tanstack/zod-form-adapter'
+import { z } from 'zod'
+import { fallback, zodSearchValidator } from '@tanstack/router-zod-adapter'
 
-import {toast} from 'sonner'
-import {Label} from '@/components/ui/label'
-import {Input} from '@/components/ui/input'
+import { toast } from 'sonner'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 import FieldInfo from '@/components/utils/fieldInfo'
-import {Button} from '@/components/ui/button'
-import {LoaderCircle} from 'lucide-react'
-import {loginSchema} from '@/shared/types'
+import { Button } from '@/components/ui/button'
+import { LoaderCircle } from 'lucide-react'
+import { loginSchema } from '@/shared/types'
 
 const loginSearchSchema = z.object({
   redirect: fallback(z.string(), '/').default('/'),
@@ -27,19 +27,13 @@ const loginSearchSchema = z.object({
 export const Route = createFileRoute('/auth/login')({
   component: Login,
   validateSearch: zodSearchValidator(loginSearchSchema),
-  beforeLoad: async ({context, search}) => {
-    const user = await context.queryClient.ensureQueryData(userQueryOptions())
-    if (user) {
-      throw redirect({to: search.redirect})
-    }
-  },
 })
 
 function Login() {
-  const search = Route.useSearch()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const router = useRouter()
+  const search = Route.useSearch()
 
   const form = useForm({
     defaultValues: {
@@ -50,17 +44,18 @@ function Login() {
     validators: {
       onChange: loginSchema,
     },
-    onSubmit: async ({value}) => {
+    onSubmit: async ({ value }) => {
       const res = await postLogin(value.email, value.password)
       if (res.success) {
         queryClient.invalidateQueries({
           queryKey: ['user'],
         })
-        // await router.invalidate()
-        window.location.reload()
+        await router.invalidate()
+        // window.location.reload()
 
-        await navigate({
+        await router.navigate({
           to: search.redirect,
+          replace: true,
         })
         return null
       } else {
@@ -72,6 +67,8 @@ function Login() {
         form.setErrorMap({
           onSubmit: res.isFormError ? res.error : 'Unexpected error',
         })
+
+        return res.error
       }
     },
   })

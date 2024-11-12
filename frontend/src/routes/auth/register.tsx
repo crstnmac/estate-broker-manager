@@ -1,8 +1,8 @@
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {Label} from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import FieldInfo from '@/components/utils/fieldInfo'
-import {useForm} from '@tanstack/react-form'
+import { useForm } from '@tanstack/react-form'
 import {
   createFileRoute,
   Link,
@@ -10,14 +10,14 @@ import {
   useNavigate,
   useRouter,
 } from '@tanstack/react-router'
-import {zodValidator} from '@tanstack/zod-form-adapter'
-import {z} from 'zod'
-import {LoaderCircle} from 'lucide-react'
-import {fallback, zodSearchValidator} from '@tanstack/router-zod-adapter'
-import {postSignup, userQueryOptions} from '@/lib/api'
-import {loginSchema, registerSchema} from '@/shared/types'
-import {useQueryClient} from '@tanstack/react-query'
-import {toast} from 'sonner'
+import { zodValidator } from '@tanstack/zod-form-adapter'
+import { z } from 'zod'
+import { LoaderCircle } from 'lucide-react'
+import { fallback, zodSearchValidator } from '@tanstack/router-zod-adapter'
+import { postSignup, userQueryOptions } from '@/lib/api'
+import { loginSchema, registerSchema } from '@/shared/types'
+import { useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 const signupSearchSchema = z.object({
   redirect: fallback(z.string(), '/').default('/'),
@@ -26,7 +26,7 @@ const signupSearchSchema = z.object({
 export const Route = createFileRoute('/auth/register')({
   component: RegisterComponent,
   validateSearch: zodSearchValidator(signupSearchSchema),
-  beforeLoad: async ({context, search}) => {
+  beforeLoad: async ({ context, search }) => {
     const user = await context.queryClient.ensureQueryData(userQueryOptions())
     if (user) {
       throw redirect({
@@ -53,18 +53,20 @@ function RegisterComponent() {
     validators: {
       onChange: registerSchema,
     },
-    onSubmit: async ({value}) => {
+    onSubmit: async ({ value }) => {
       const res = await postSignup(
         value.username,
         value.password,
         value.email,
-        value.name
+        value.name,
       )
       if (res.success) {
-        await queryClient.invalidateQueries({queryKey: ['user']})
-        // router.invalidate()
-        window.location.reload()
-        await navigate({to: search.redirect})
+        await queryClient.invalidateQueries({ queryKey: ['user'] })
+        await router.invalidate()
+        await router.navigate({
+          to: search.redirect,
+          replace: true,
+        })
         return null
       } else {
         if (!res.isFormError) {
@@ -75,6 +77,7 @@ function RegisterComponent() {
         form.setErrorMap({
           onSubmit: res.isFormError ? res.error : 'Unexpected error',
         })
+        return res.error
       }
     },
   })
