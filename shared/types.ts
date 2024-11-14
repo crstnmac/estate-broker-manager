@@ -15,11 +15,6 @@ export type ErrorResponse = {
 }
 
 export const registerSchema = z.object({
-  username: z
-    .string()
-    .min(3)
-    .max(31)
-    .regex(/^[a-zA-Z0-9_]+$/),
   name: z.string().min(3).max(255),
   email: z.string().email(),
   password: z.string().min(3).max(255),

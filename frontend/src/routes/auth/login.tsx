@@ -90,7 +90,7 @@ function Login() {
             <form.Field name="email">
               {(field) => (
                 <>
-                  <Label htmlFor={field.name}>Username</Label>
+                  <Label htmlFor={field.name}>Email</Label>
                   <Input
                     id="email"
                     type="email"
@@ -98,7 +98,7 @@ function Login() {
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
-                    placeholder="Enter your username"
+                    placeholder="Enter your email"
                   />
                   <FieldInfo field={field} />
                 </>

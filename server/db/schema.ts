@@ -97,9 +97,8 @@ export const notificationTypeEnum = pgEnum('notification_type', [
 
 export const userTable = pgTable('user', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  username: varchar('username', {length: 100}).notNull(),
   name: varchar('name', {length: 255}).notNull(),
-  email: varchar('email', {length: 255}).notNull(),
+  email: varchar('email', {length: 255}).unique().notNull(),
   password: varchar('password', {length: 255}).notNull(),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

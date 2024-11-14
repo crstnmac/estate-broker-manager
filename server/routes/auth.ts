@@ -18,7 +18,7 @@ import {config} from '@/config'
 
 export const authRouter = new Hono<Context>()
   .post('/signup', zValidator('form', registerSchema), async (c) => {
-    const {username, name, email, password} = c.req.valid('form')
+    const {name, email, password} = c.req.valid('form')
 
     const passwordHash = await Bun.password.hash(password) // Use Bun for hashing
 
@@ -26,7 +26,6 @@ export const authRouter = new Hono<Context>()
       const res = await db
         .insert(userTable)
         .values({
-          username,
           name,
           email,
           password: passwordHash,
@@ -71,7 +70,7 @@ export const authRouter = new Hono<Context>()
     '/login',
     zValidator('form', loginSchema, (result, c) => {
       if (!result.success) {
-        c.json({message: 'Invalid username or password'}, 400)
+        c.json({message: 'Invalid email or password'}, 400)
       }
     }),
     async (c) => {
@@ -85,7 +84,7 @@ export const authRouter = new Hono<Context>()
 
       if (!existingUser) {
         throw new HTTPException(401, {
-          message: 'Incorrect username or password',
+          message: 'Incorrect email or password',
         })
       }
 
@@ -144,14 +143,12 @@ export const authRouter = new Hono<Context>()
       SuccessResponse<{
         email: string
         name: string
-        username: string
         avatar: string
         phone: string
       }>
     >({
       success: true,
       data: {
-        username: user.username,
         name: user.name,
         email: user.email,
         avatar: user.avatar,

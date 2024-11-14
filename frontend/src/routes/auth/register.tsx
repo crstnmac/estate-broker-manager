@@ -44,7 +44,6 @@ function RegisterComponent() {
 
   const form = useForm({
     defaultValues: {
-      username: '',
       name: '',
       email: '',
       password: '',
@@ -55,7 +54,6 @@ function RegisterComponent() {
     },
     onSubmit: async ({ value }) => {
       const res = await postSignup(
-        value.username,
         value.password,
         value.email,
         value.name,
@@ -96,18 +94,18 @@ function RegisterComponent() {
           className="space-y-4"
         >
           <div className="space-y-2">
-            <form.Field name="username">
+            <form.Field name="email">
               {(field) => (
                 <>
-                  <Label htmlFor={field.name}>Username</Label>
+                  <Label htmlFor={field.name}>Email</Label>
                   <Input
-                    id="username"
+                    id="enail"
                     type="text"
                     name={field.name}
                     value={field.state.value}
                     onBlur={field.handleBlur}
                     onChange={(e) => field.handleChange(e.target.value)}
-                    placeholder="Enter your username"
+                    placeholder="Enter your enail"
                   />
                   <FieldInfo field={field} />
                 </>

@@ -71,8 +71,8 @@ function SettingsProfile() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input id="username" value={user?.username} />
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" value={user?.email} />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="newPassword">New Password</Label>
