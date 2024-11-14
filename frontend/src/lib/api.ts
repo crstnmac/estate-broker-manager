@@ -85,4 +85,5 @@ export const userQueryOptions = () =>
     queryKey: ['user'],
     queryFn: getUser,
     staleTime: Infinity,
+    retry: false, // Don't retry on error
   })

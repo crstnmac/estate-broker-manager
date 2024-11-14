@@ -1,12 +1,10 @@
-import { postLogin, userQueryOptions } from '@/lib/api'
+import { postLogin, userQueryOptions, getUser } from '@/lib/api'
 import { useForm } from '@tanstack/react-form'
 import { useQueryClient } from '@tanstack/react-query'
 import {
   createFileRoute,
   Link,
-  redirect,
   useNavigate,
-  useRouter,
 } from '@tanstack/react-router'
 import { zodValidator } from '@tanstack/zod-form-adapter'
 import { z } from 'zod'
@@ -32,7 +30,6 @@ export const Route = createFileRoute('/auth/login')({
 function Login() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
-  const router = useRouter()
   const search = Route.useSearch()
 
   const form = useForm({
@@ -47,17 +44,22 @@ function Login() {
     onSubmit: async ({ value }) => {
       const res = await postLogin(value.email, value.password)
       if (res.success) {
-        queryClient.invalidateQueries({
-          queryKey: ['user'],
-        })
-        await router.invalidate()
-        // window.location.reload()
-
-        await router.navigate({
-          to: search.redirect,
-          replace: true,
-        })
-        return null
+        // Fetch fresh user data after login
+        const userData = await getUser()
+        if (userData) {
+          // Set the complete user data in the cache
+          await queryClient.setQueryData(['user'], userData)
+          
+          // Navigate to the redirect path
+          navigate({
+            to: search.redirect,
+            replace: true,
+          })
+          return null
+        } else {
+          toast.error('Failed to fetch user data')
+          return 'Failed to fetch user data'
+        }
       } else {
         if (!res.isFormError) {
           toast.error('Login failed. Please try again.', {
@@ -67,10 +69,9 @@ function Login() {
         form.setErrorMap({
           onSubmit: res.isFormError ? res.error : 'Unexpected error',
         })
-
         return res.error
       }
-    },
+    }
   })
 
   return (
