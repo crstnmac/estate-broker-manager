@@ -94,25 +94,6 @@ function RegisterComponent() {
           className="space-y-4"
         >
           <div className="space-y-2">
-            <form.Field name="email">
-              {(field) => (
-                <>
-                  <Label htmlFor={field.name}>Email</Label>
-                  <Input
-                    id="enail"
-                    type="text"
-                    name={field.name}
-                    value={field.state.value}
-                    onBlur={field.handleBlur}
-                    onChange={(e) => field.handleChange(e.target.value)}
-                    placeholder="Enter your enail"
-                  />
-                  <FieldInfo field={field} />
-                </>
-              )}
-            </form.Field>
-          </div>
-          <div className="space-y-2">
             <form.Field name="name">
               {(field) => (
                 <>
