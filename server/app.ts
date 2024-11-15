@@ -14,6 +14,9 @@ import {
 } from './utils/authUtils'
 import {authRouter} from './routes/auth'
 import { prettyJSON } from 'hono/pretty-json'
+import { userRoutes } from './routes/users'
+import { leadRouter } from './routes/leads'
+import { timelineRouter } from './routes/timeline-events'
 
 const app = new Hono<Context>()
 
@@ -60,7 +63,11 @@ app.use(
   }
 )
 
-const apiRoutes = app.basePath('/api').route('/auth', authRouter)
+const apiRoutes = app.basePath('/api')
+  .route('/auth', authRouter)
+  .route('/leads', leadRouter)
+  .route('/users',userRoutes)
+  .route('/timeline', timelineRouter)
 
 app.use('*', serveStatic({root: './frontend/dist'}))
 app.use('*', serveStatic({root: './frontend/dist/index.html'}))

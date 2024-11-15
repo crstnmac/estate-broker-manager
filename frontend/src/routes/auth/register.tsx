@@ -7,7 +7,6 @@ import {
   createFileRoute,
   Link,
   redirect,
-  useNavigate,
   useRouter,
 } from '@tanstack/react-router'
 import { zodValidator } from '@tanstack/zod-form-adapter'
@@ -15,7 +14,7 @@ import { z } from 'zod'
 import { LoaderCircle } from 'lucide-react'
 import { fallback, zodSearchValidator } from '@tanstack/router-zod-adapter'
 import { postSignup, userQueryOptions } from '@/lib/api'
-import { loginSchema, registerSchema } from '@/shared/types'
+import { registerSchema } from '@/shared/types'
 import { useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 
@@ -38,7 +37,6 @@ export const Route = createFileRoute('/auth/register')({
 
 function RegisterComponent() {
   const search = Route.useSearch()
-  const navigate = useNavigate()
   const router = useRouter()
   const queryClient = useQueryClient()
 

@@ -13,7 +13,7 @@ import {deleteCookie, setCookie} from 'hono/cookie'
 import postgres from 'postgres'
 import {HTTPException} from 'hono/http-exception'
 import type {Context} from '@/context'
-import {loggedIn} from '@/middleware/loggedIn'
+import {isLoggedIn} from '@/middleware/isLoggedIn'
 import {config} from '@/config'
 
 export const authRouter = new Hono<Context>()
@@ -137,7 +137,7 @@ export const authRouter = new Hono<Context>()
 
     return c.redirect('/')
   })
-  .get('/user', loggedIn, async (c) => {
+  .get('/user', isLoggedIn, async (c) => {
     const user = c.get('user')!
     return c.json<
       SuccessResponse<{

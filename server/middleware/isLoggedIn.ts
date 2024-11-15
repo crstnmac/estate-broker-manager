@@ -2,7 +2,7 @@ import type {Context} from '@/context'
 import {createMiddleware} from 'hono/factory'
 import {HTTPException} from 'hono/http-exception'
 
-export const loggedIn = createMiddleware<Context>(async (c, next) => {
+export const isLoggedIn = createMiddleware<Context>(async (c, next) => {
   const user = c.get('user')
 
   if (!user) {

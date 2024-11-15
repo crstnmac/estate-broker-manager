@@ -24,3 +24,30 @@ export const loginSchema = z.object({
   email: z.string().min(3).max(255),
   password: z.string().min(3).max(255),
 })
+
+
+export interface TimelineEvent {
+  id: number
+  leadId: number
+  type: 'status_change' | 'note_added' | 'contact' | 'meeting_scheduled' | 'document_added'
+  description: string
+  metadata?: Record<string, unknown>
+  createdAt: string
+  createdById: number
+}
+
+export interface Lead {
+  id: number
+  name: string
+  email: string
+  phone?: string
+  status: 'new' | 'contacted' | 'qualified' | 'lost'
+  source: string
+  notes?: string
+  assignedToId?: number
+  lastContact?: Date
+  createdAt: string
+  updatedAt: string
+}
+
+

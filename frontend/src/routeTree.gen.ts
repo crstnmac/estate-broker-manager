@@ -26,6 +26,10 @@ import { Route as LayoutDocumentsImport } from './routes/_layout/documents'
 import { Route as LayoutClientsImport } from './routes/_layout/clients'
 import { Route as LayoutCalendarImport } from './routes/_layout/calendar'
 import { Route as LayoutBillingImport } from './routes/_layout/billing'
+import { Route as LayoutLeadsIndexImport } from './routes/_layout/leads/index'
+import { Route as LayoutLeadsNewImport } from './routes/_layout/leads/new'
+import { Route as LayoutLeadsLeadIdImport } from './routes/_layout/leads/$leadId'
+import { Route as LayoutLeadsLeadIdEditImport } from './routes/_layout/leads/$leadId.edit'
 
 // Create/Update Routes
 
@@ -116,6 +120,30 @@ const LayoutBillingRoute = LayoutBillingImport.update({
   id: '/billing',
   path: '/billing',
   getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutLeadsIndexRoute = LayoutLeadsIndexImport.update({
+  id: '/leads/',
+  path: '/leads/',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutLeadsNewRoute = LayoutLeadsNewImport.update({
+  id: '/leads/new',
+  path: '/leads/new',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutLeadsLeadIdRoute = LayoutLeadsLeadIdImport.update({
+  id: '/leads/$leadId',
+  path: '/leads/$leadId',
+  getParentRoute: () => LayoutRoute,
+} as any)
+
+const LayoutLeadsLeadIdEditRoute = LayoutLeadsLeadIdEditImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => LayoutLeadsLeadIdRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -227,10 +255,49 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LayoutIndexImport
       parentRoute: typeof LayoutImport
     }
+    '/_layout/leads/$leadId': {
+      id: '/_layout/leads/$leadId'
+      path: '/leads/$leadId'
+      fullPath: '/leads/$leadId'
+      preLoaderRoute: typeof LayoutLeadsLeadIdImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/leads/new': {
+      id: '/_layout/leads/new'
+      path: '/leads/new'
+      fullPath: '/leads/new'
+      preLoaderRoute: typeof LayoutLeadsNewImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/leads/': {
+      id: '/_layout/leads/'
+      path: '/leads'
+      fullPath: '/leads'
+      preLoaderRoute: typeof LayoutLeadsIndexImport
+      parentRoute: typeof LayoutImport
+    }
+    '/_layout/leads/$leadId/edit': {
+      id: '/_layout/leads/$leadId/edit'
+      path: '/edit'
+      fullPath: '/leads/$leadId/edit'
+      preLoaderRoute: typeof LayoutLeadsLeadIdEditImport
+      parentRoute: typeof LayoutLeadsLeadIdImport
+    }
   }
 }
 
 // Create and export the route tree
+
+interface LayoutLeadsLeadIdRouteChildren {
+  LayoutLeadsLeadIdEditRoute: typeof LayoutLeadsLeadIdEditRoute
+}
+
+const LayoutLeadsLeadIdRouteChildren: LayoutLeadsLeadIdRouteChildren = {
+  LayoutLeadsLeadIdEditRoute: LayoutLeadsLeadIdEditRoute,
+}
+
+const LayoutLeadsLeadIdRouteWithChildren =
+  LayoutLeadsLeadIdRoute._addFileChildren(LayoutLeadsLeadIdRouteChildren)
 
 interface LayoutRouteChildren {
   LayoutBillingRoute: typeof LayoutBillingRoute
@@ -245,6 +312,9 @@ interface LayoutRouteChildren {
   LayoutTeamsRoute: typeof LayoutTeamsRoute
   LayoutWorkflowsRoute: typeof LayoutWorkflowsRoute
   LayoutIndexRoute: typeof LayoutIndexRoute
+  LayoutLeadsLeadIdRoute: typeof LayoutLeadsLeadIdRouteWithChildren
+  LayoutLeadsNewRoute: typeof LayoutLeadsNewRoute
+  LayoutLeadsIndexRoute: typeof LayoutLeadsIndexRoute
 }
 
 const LayoutRouteChildren: LayoutRouteChildren = {
@@ -260,6 +330,9 @@ const LayoutRouteChildren: LayoutRouteChildren = {
   LayoutTeamsRoute: LayoutTeamsRoute,
   LayoutWorkflowsRoute: LayoutWorkflowsRoute,
   LayoutIndexRoute: LayoutIndexRoute,
+  LayoutLeadsLeadIdRoute: LayoutLeadsLeadIdRouteWithChildren,
+  LayoutLeadsNewRoute: LayoutLeadsNewRoute,
+  LayoutLeadsIndexRoute: LayoutLeadsIndexRoute,
 }
 
 const LayoutRouteWithChildren =
@@ -281,6 +354,10 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/': typeof LayoutIndexRoute
+  '/leads/$leadId': typeof LayoutLeadsLeadIdRouteWithChildren
+  '/leads/new': typeof LayoutLeadsNewRoute
+  '/leads': typeof LayoutLeadsIndexRoute
+  '/leads/$leadId/edit': typeof LayoutLeadsLeadIdEditRoute
 }
 
 export interface FileRoutesByTo {
@@ -298,6 +375,10 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/': typeof LayoutIndexRoute
+  '/leads/$leadId': typeof LayoutLeadsLeadIdRouteWithChildren
+  '/leads/new': typeof LayoutLeadsNewRoute
+  '/leads': typeof LayoutLeadsIndexRoute
+  '/leads/$leadId/edit': typeof LayoutLeadsLeadIdEditRoute
 }
 
 export interface FileRoutesById {
@@ -317,6 +398,10 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/_layout/': typeof LayoutIndexRoute
+  '/_layout/leads/$leadId': typeof LayoutLeadsLeadIdRouteWithChildren
+  '/_layout/leads/new': typeof LayoutLeadsNewRoute
+  '/_layout/leads/': typeof LayoutLeadsIndexRoute
+  '/_layout/leads/$leadId/edit': typeof LayoutLeadsLeadIdEditRoute
 }
 
 export interface FileRouteTypes {
@@ -337,6 +422,10 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/'
+    | '/leads/$leadId'
+    | '/leads/new'
+    | '/leads'
+    | '/leads/$leadId/edit'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/billing'
@@ -353,6 +442,10 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/'
+    | '/leads/$leadId'
+    | '/leads/new'
+    | '/leads'
+    | '/leads/$leadId/edit'
   id:
     | '__root__'
     | '/_layout'
@@ -370,6 +463,10 @@ export interface FileRouteTypes {
     | '/auth/login'
     | '/auth/register'
     | '/_layout/'
+    | '/_layout/leads/$leadId'
+    | '/_layout/leads/new'
+    | '/_layout/leads/'
+    | '/_layout/leads/$leadId/edit'
   fileRoutesById: FileRoutesById
 }
 
@@ -414,7 +511,10 @@ export const routeTree = rootRoute
         "/_layout/tasks",
         "/_layout/teams",
         "/_layout/workflows",
-        "/_layout/"
+        "/_layout/",
+        "/_layout/leads/$leadId",
+        "/_layout/leads/new",
+        "/_layout/leads/"
       ]
     },
     "/_layout/billing": {
@@ -470,6 +570,25 @@ export const routeTree = rootRoute
     "/_layout/": {
       "filePath": "_layout/index.tsx",
       "parent": "/_layout"
+    },
+    "/_layout/leads/$leadId": {
+      "filePath": "_layout/leads/$leadId.tsx",
+      "parent": "/_layout",
+      "children": [
+        "/_layout/leads/$leadId/edit"
+      ]
+    },
+    "/_layout/leads/new": {
+      "filePath": "_layout/leads/new.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/leads/": {
+      "filePath": "_layout/leads/index.tsx",
+      "parent": "/_layout"
+    },
+    "/_layout/leads/$leadId/edit": {
+      "filePath": "_layout/leads/$leadId.edit.tsx",
+      "parent": "/_layout/leads/$leadId"
     }
   }
 }

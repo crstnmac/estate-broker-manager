@@ -38,6 +38,11 @@ const data = {
       isActive: true,
     },
     {
+      title: "Leads",
+      url: '/leads',
+      icon: Users,
+    },
+    {
       title: 'Properties',
       url: '/properties',
       icon: Frame,

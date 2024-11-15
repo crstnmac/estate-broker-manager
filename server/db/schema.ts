@@ -188,35 +188,21 @@ export const clientTable = pgTable('client', {
   updatedAt: timestamp('updated_at').defaultNow(),
 })
 
-export const leadTable = pgTable(
-  'lead',
-  {
-    id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    firstName: varchar('first_name', {length: 100}).notNull(),
-    lastName: varchar('last_name', {length: 100}).notNull(),
-    email: varchar('email', {length: 255}),
-    phone: varchar('phone', {length: 20}),
-    source: varchar('source', {length: 100}),
-    status: leadStatusEnum('status').notNull().default('new'),
-    notes: text('notes'),
-    assignedAgentId: integer('assigned_agent_id').references(
-      () => userTable.id
-    ),
-    tags: json('tags').$type<string[]>(),
-    nextFollowUpDate: timestamp('next_follow_up_date'),
-    leadSource: text('lead_source'),
-    liefcycleStage: lifeCycleStageEnum('lifecycle_stage')
-      .notNull()
-      .default('lead'),
-    lastContactedAt: timestamp('last_contacted_at'),
-    createdAt: timestamp('created_at').defaultNow(),
-    updatedAt: timestamp('updated_at').defaultNow(),
-  },
-  (table) => ({
-      leadStatusIndex: index('lead_status_index').on(table.status),
-      leadAgentIndex: index('lead_agent_index').on(table.assignedAgentId),
-  })
-)
+export const leadTable = pgTable('lead', {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  name: varchar('name', { length: 100 }).notNull(),
+  email: varchar('email', { length: 255 }).notNull(),
+  phone: varchar('phone', { length: 20 }),
+  status: leadStatusEnum('status').notNull().default('new'),
+  source: varchar('source', { length: 100 }).notNull(),
+  assignedToId: integer('assigned_to_id')
+    .references(() => userTable.id)
+    .notNull(),
+  notes: text('notes'),
+  lastContact: timestamp('last_contact'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+})
 
 export const taskTable = pgTable('task', {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -357,6 +343,39 @@ export const amenityTable = pgTable('amenity', {
   updatedAt: timestamp('updated_at').defaultNow(),
 })
 
+export const timelineEventTypeEnum = pgEnum('timeline_event_type', [
+  'status_change',
+  'note_added',
+  'contact',
+  'meeting_scheduled',
+  'document_added',
+])
+
+export const timelineEventTable = pgTable('timeline_event', {
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
+  leadId: integer('lead_id')
+    .references(() => leadTable.id)
+    .notNull(),
+  type: timelineEventTypeEnum('type').notNull(),
+  description: text('description').notNull(),
+  metadata: json('metadata').$type<Record<string, unknown>>(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  createdById: integer('created_by_id')
+    .references(() => userTable.id)
+    .notNull(),
+})
+
+export const timelineEventRelations = relations(timelineEventTable, ({ one }) => ({
+  lead: one(leadTable, {
+    fields: [timelineEventTable.leadId],
+    references: [leadTable.id],
+  }),
+  createdBy: one(userTable, {
+    fields: [timelineEventTable.createdById],
+    references: [userTable.id],
+  }),
+}))
+
 // Relations
 export const userRelations = relations(userTable, ({many}) => ({
   properties: many(propertyTable),
@@ -393,11 +412,12 @@ export const clientRelations = relations(clientTable, ({one, many}) => ({
 }))
 
 export const leadRelations = relations(leadTable, ({one, many}) => ({
-  assignedAgent: one(userTable, {
-    fields: [leadTable.assignedAgentId],
+  assignedTo: one(userTable, {
+    fields: [leadTable.assignedToId],
     references: [userTable.id],
   }),
   tasks: many(taskTable),
+  timelineEvents: many(timelineEventTable),
 }))
 
 export const taskRelations = relations(taskTable, ({one, many}) => ({
@@ -518,3 +538,4 @@ export type Invoice = InferSelectModel<typeof invoices>
 export type Notification = InferSelectModel<typeof notificationTable>
 export type ActivityLog = InferSelectModel<typeof activityLogTable>
 export type Amenity = InferSelectModel<typeof amenityTable>
+export type TimelineEvent = InferSelectModel<typeof timelineEventTable>
