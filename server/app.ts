@@ -13,7 +13,7 @@ import {
   validateSessionToken,
 } from './utils/authUtils'
 import {authRouter} from './routes/auth'
-import { prettyJSON } from 'hono/pretty-json'
+import {prettyJSON} from 'hono/pretty-json'
 
 const app = new Hono<Context>()
 
@@ -90,7 +90,7 @@ app.onError((err, c) => {
       error:
         process.env.NODE_ENV === 'production'
           ? 'Internal Server Error'
-          : err.stack ?? err.message,
+          : (err.stack ?? err.message),
     },
     500
   )

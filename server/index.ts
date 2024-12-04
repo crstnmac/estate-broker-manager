@@ -7,6 +7,7 @@ const hostname = config.api.host || '0.0.0.0'
 Bun.serve({
   fetch: app.fetch,
   port,
+  hostname,
 })
 
 console.log(`Server running at http://${hostname}:${port}/`)
