@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "homepage": "estate.criston.uk",
   "scripts": {
     "typecheck": "tsc --noEmit",
     "dev": "bunx --bun vite",
