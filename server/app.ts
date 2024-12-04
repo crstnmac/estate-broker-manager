@@ -97,7 +97,7 @@ app.onError((err, c) => {
       error:
         process.env.NODE_ENV === 'production'
           ? 'Internal Server Error'
-          : err.stack ?? err.message,
+          : (err.stack ?? err.message),
     },
     500
   )
