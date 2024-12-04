@@ -3,9 +3,9 @@
 # Base stage with Bun
 FROM debian:bullseye-slim as base
 
-# Install necessary packages including curl
+# Install necessary packages including curl and nginx
 RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y ca-certificates curl unzip && \
+    apt-get install --no-install-recommends -y ca-certificates curl unzip nginx && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Bun using nixpacks-compatible approach
@@ -49,12 +49,21 @@ FROM base
 # Copy built application
 COPY --from=build /app /app
 
+# Configure nginx
+RUN echo ' \
+server { \
+    listen 3000; \
+    root /app/frontend/dist; \
+    location / { \
+        try_files $uri $uri/ /index.html; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
+
 # Nixpacks configuration through environment variables
 ENV PORT=3000
-ENV START_COMMAND="bun run start"
 
 # Expose port
 EXPOSE 3000
 
-# Start command
-CMD ["bun", "run", "start"]
+# Start nginx in foreground
+CMD ["nginx", "-g", "daemon off;"]
