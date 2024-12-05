@@ -70,6 +70,13 @@ const apiRoutes = app.basePath('/api')
   .route('/timeline', timelineRouter)
 
 app.use('*', serveStatic({root: './frontend/dist'}))
+app.get(
+  '*',
+  serveStatic({
+    root: './',
+    path: 'frontend/dist/index.html',
+  })
+)
 app.use('*', serveStatic({root: './frontend/dist/index.html'}))
 
 app.onError((err, c) => {
