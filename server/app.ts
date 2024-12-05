@@ -63,6 +63,13 @@ app.use(
 const apiRoutes = app.basePath('/api').route('/auth', authRouter)
 
 app.use('*', serveStatic({root: './frontend/dist'}))
+app.get(
+  '*',
+  serveStatic({
+    root: './',
+    path: 'frontend/dist/index.html',
+  })
+)
 app.use('*', serveStatic({root: './frontend/dist/index.html'}))
 
 app.onError((err, c) => {
